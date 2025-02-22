@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Realtime Database Sample</title>
+
+    <!-- <script type="module" src="index.js"></script> -->
+  </head>
+  <body>
+    <h1>Firebase Sandbox</h1>
+    <ul>
+      <li><a href="/">Realtime Database</a></li>
+      <li><a href="authentication.html">Authentication</a></li>
+    </ul>
+    <h2>Realtime Database</h2>
+    <ul id="messages"></ul>
+    <hr />
+    
+    <script type="module">
+      import {initializeApp} from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+      import {getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "",
+        authDomain: "",
+        databaseURL: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: "",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+
+      // Initialize Realtime Database and get a reference to the service
+      const database = getDatabase(app);
+
+      // 🔹 Reference to the messages in Firebase
+      const messagesRef = ref(database, "/comments");
+
+      // Fetch comments in real-time
+      onValue(messagesRef, (snapshot) => {
+        const ul = document.getElementById("messages");
+        ul.innerHTML = ""; 
+    
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const childData = childSnapshot.val();
+    
+                const name = childData.name || "Unknown";
+                const messageText = childData.text || "No message"; 
+    
+                // Create and append list item
+                const li = document.createElement("li");
+                li.textContent = `${name}: ${messageText}`;
+                ul.appendChild(li);
+            });
+        } else {
+            ul.innerHTML = "<li>No messages found.</li>";
+        }
+      });
+    </script>
+  </body>
+</html>
